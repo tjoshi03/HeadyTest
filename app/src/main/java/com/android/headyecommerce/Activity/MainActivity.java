@@ -12,6 +12,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -173,9 +175,30 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
+
     public void init(){
         recyclerView.setLayoutManager(new GridLayoutManager(this,2));
         recyclerView1.setLayoutManager(new GridLayoutManager(this,2));
         recyclerView2.setLayoutManager(new GridLayoutManager(this,2));
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch(item.getItemId()) {
+            case R.id.menu_cart:
+
+                startActivity(new Intent(this,CartActivity.class));
+                return(true);
+
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.cartmenu, menu);
+        return true;
     }
 }

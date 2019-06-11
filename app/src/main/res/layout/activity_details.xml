@@ -92,8 +92,9 @@
         android:layout_height="wrap_content"/>
 
     <Button
-        android:id="@+id/btn_buy"
-        android:text="Buy Now"
+        android:id="@+id/btn_cart"
+        android:text="Add to Cart"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

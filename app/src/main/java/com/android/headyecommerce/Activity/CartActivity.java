@@ -9,7 +9,9 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.headyecommerce.Adapter.CartAdapter;
@@ -33,8 +35,15 @@ public class CartActivity extends AppCompatActivity {
     @BindView(R.id.tv_total)
     TextView tv_total;
 
+    @BindView(R.id.tv_error)
+    TextView tv_error;
+
     @BindView(R.id.btn_place)
     Button btn_place;
+
+    @BindView(R.id.ll_bottom)
+    LinearLayout ll_bottom;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,29 +59,34 @@ public class CartActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         TaskListViewModel viewModel = ViewModelProviders.of(this).get(TaskListViewModel.class);
 
-        viewModel.getItem().observe(this, new Observer<List<ProductTable>>() {
+        viewModel.getItem().observe(this, productTables -> {
+            CartAdapter cartAdapter=new CartAdapter(CartActivity.this,productTables);
+            rv.setAdapter(cartAdapter);
+
+
+            cartAdapter.Onclick(position -> viewModel.deleteItem(productTables.get(position).getId()));
+
+        int total=    Stream.of(productTables).mapToInt(productTable -> productTable.getVariants().getPrice()).sum();
+
+        tv_total.setText("Total Rs. "+total);
+
+        btn_place.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onChanged(@Nullable List<ProductTable> productTables) {
-                CartAdapter cartAdapter=new CartAdapter(CartActivity.this,productTables);
-                rv.setAdapter(cartAdapter);
-
-
-                cartAdapter.Onclick(new CartAdapter.setonclick() {
-                    @Override
-                    public void onclick(int position) {
-                       viewModel.deleteItem(productTables.get(position).getId());
-                    }
-                });
-
-            int total=    Stream.of(productTables).mapToInt(new ToIntFunction<ProductTable>() {
-                    @Override
-                    public int applyAsInt(ProductTable productTable) {
-                        return productTable.getVariants().getPrice();
-                    }
-                }).sum();
-
-            tv_total.setText("Total Rs. "+total);
+            public void onClick(View view) {
+                startActivity(new Intent(CartActivity.this,CheckOutActivity.class));
             }
+        });
+
+        if (productTables.size()>0){
+            rv.setVisibility(View.VISIBLE);
+            ll_bottom.setVisibility(View.VISIBLE);
+            tv_error.setVisibility(View.GONE);
+        }
+        else {
+            rv.setVisibility(View.GONE);
+            ll_bottom.setVisibility(View.GONE);
+            tv_error.setVisibility(View.VISIBLE);
+        }
         });
 
 
